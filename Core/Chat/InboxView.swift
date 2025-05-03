@@ -16,6 +16,11 @@ struct InboxView: View {
                 .onChange(of: selectedUser) { oldValue, newValue in
                     showChat = newValue != nil
                 }
+                .onChange(of: showChat) { oldValue, newValue in
+                    if !newValue {
+                        selectedUser = nil  // Reset selectedUser when chat is dismissed
+                    }
+                }
                 .navigationDestination(isPresented: $showChat) {
                     if let selectedUser = selectedUser {
                         ChatView(user: selectedUser)
