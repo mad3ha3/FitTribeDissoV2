@@ -1,61 +1,57 @@
-
-
 import SwiftUI
 
-struct Goals {
-    let name: String
-    var isDone: Bool
-}
-
 struct GoalsView: View {
-    
-    @State var items: [Goals] = []
+    @StateObject private var viewModel = GoalsViewModel()
     @State var inputText: String = ""
     
     var body: some View {
         VStack {
+            if viewModel.isLoading {
+                ProgressView("Showing your goals...")
+            }
             List {
-                ForEach(0..<items.count, id: \.self) { i in
+                ForEach(viewModel.goals) { goal in
                     Button {
-                        items[i].isDone.toggle()
+                        Task {
+                            await viewModel.toggleCompletedGoal(goal)
+                        }
                     } label: {
-                        HStack{
-                            if items[i].isDone {
-                                Image(systemName: "checkmark.square")
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                            }
-                            else {
-                                Image(systemName: "square")
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                            }
-                            Text("\(items[i].name)")
+                        HStack {
+                            Image(systemName: goal.isDone ? "checkmark.square.fill" : "square")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                            Text(goal.name)
                         }
                     }
                 }
-                
+                .onDelete { indexSet in
+                    guard let index = indexSet.first else { return }
+                    Task {
+                        await viewModel.deleteGoal(viewModel.goals[index])
+                    }
+                }
             }
-        }
-        
-        HStack{
-            TextField("Add a new goal", text: $inputText)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
             
-            Button {
-                items.append(Goals(name: inputText, isDone: false))
-                inputText = ""
-            } label: {
-                Text("Add")
+            HStack {
+                TextField("Add a new goal", text: $inputText)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                
+                Button("Add") {
+                    guard !inputText.isEmpty else { return }
+                    Task {
+                        await viewModel.addGoal(name: inputText)
+                        inputText = ""
+                    }
+                }
             }
+            .padding(.horizontal)
+            .padding(.bottom, 20)
         }
-        .padding(.horizontal)
-        .padding(.bottom, 20)
     }
 }
 
 #Preview {
-  GoalsView()
+    GoalsView()
 }
 
 
