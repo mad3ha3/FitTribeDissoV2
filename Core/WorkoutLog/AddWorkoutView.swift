@@ -10,23 +10,19 @@ import SwiftUI
 struct AddWorkoutView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var workoutViewModel: WorkoutViewModel
-    let selectedDay: WeekDay
+    let preselectedType: String
     
     @State private var workoutName = ""
-    @State private var workoutType = "Cardio"
     @State private var duration = 30
     @State private var caloriesBurned = 0
     @State private var notes = ""
-    @State private var selectedDate: Date
+    @State private var selectedDate = Date()
     @State private var sets = 3
     @State private var reps = 10
     
-    let workoutTypes = ["Cardio", "Strength", "Flexibility", "HIIT", "Yoga"]
-    
-    init(workoutViewModel: WorkoutViewModel, selectedDay: WeekDay) {
+    init(workoutViewModel: WorkoutViewModel, preselectedType: String) {
         self.workoutViewModel = workoutViewModel
-        self.selectedDay = selectedDay
-        _selectedDate = State(initialValue: selectedDay.date)
+        self.preselectedType = preselectedType
     }
     
     var body: some View {
@@ -44,16 +40,10 @@ struct AddWorkoutView: View {
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .textInputAutocapitalization(.never)
                             
-                            Picker("Workout Type", selection: $workoutType) {
-                                ForEach(workoutTypes, id: \.self) { type in
-                                    Text(type)
-                                }
-                            }
-                            .pickerStyle(MenuPickerStyle())
+                            Text("Type: \(preselectedType)")
+                                .foregroundColor(.secondary)
                             
-                            DatePicker("Date", selection: $selectedDate, displayedComponents: .date)
-                            
-                            if workoutType == "Strength" {
+                            if preselectedType.lowercased().contains("strength") {
                                 Stepper("Sets: \(sets)", value: $sets, in: 1...10)
                                 Stepper("Reps: \(reps)", value: $reps, in: 1...30)
                             } else {
@@ -104,25 +94,28 @@ struct AddWorkoutView: View {
     private func saveWorkout() {
         let workout = Workout(
             name: workoutName,
-            type: workoutType,
-            duration: workoutType == "Strength" ? nil : duration,
+            type: preselectedType,
+            duration: preselectedType.lowercased().contains("strength") ? nil : duration,
             caloriesBurned: caloriesBurned,
             notes: notes,
             date: selectedDate,
-            userId: "", // Will be set in the ViewModel
-            sets: workoutType == "Strength" ? sets : nil,
-            reps: workoutType == "Strength" ? reps : nil
+            userId: "",
+            sets: preselectedType.lowercased().contains("strength") ? sets : nil,
+            reps: preselectedType.lowercased().contains("strength") ? reps : nil
         )
         
         Task {
-            await workoutViewModel.addWorkout(workout)
-            dismiss() // Only dismiss after the workout is added
+            await workoutViewModel.addWorkout(workout: workout)
+            dismiss()
         }
     }
 }
 
 #Preview {
-    AddWorkoutView(workoutViewModel: WorkoutViewModel(), selectedDay: .monday)
+    AddWorkoutView(
+        workoutViewModel: WorkoutViewModel(),
+        preselectedType: "Cardio"
+    )
 }
 
 

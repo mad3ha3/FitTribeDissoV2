@@ -1,0 +1,55 @@
+//
+//  WorkoutRow.swift
+//  disso
+//
+//  Created by Madeha Ahmed on 03/05/2025.
+//
+
+import SwiftUI
+
+struct WorkoutRow: View {
+    let workout: Workout
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(workout.name)
+                    .font(.headline)
+                
+                Spacer()
+                
+                if workout.type == "Strength" {
+                    if let sets = workout.sets, let reps = workout.reps {
+                        Text("\(sets)x\(reps)")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                } else if let duration = workout.duration, duration > 0 {
+                    Text("\(duration) min")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            HStack {
+                Text(workout.type)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                Text("\(workout.caloriesBurned) cal")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            if let notes = workout.notes, !notes.isEmpty {
+                Text(notes)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
