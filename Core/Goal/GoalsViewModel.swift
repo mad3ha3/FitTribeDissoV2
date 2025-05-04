@@ -79,7 +79,7 @@ class GoalsViewModel: ObservableObject {
         }
     }
     
-    func toggleCompletedGoal(_ goal: Goal) async {
+    func toggleCompletedGoal(goal: Goal) async {
         guard let id = goal.id else { return }
         
         var updatedGoal = goal
@@ -96,7 +96,7 @@ class GoalsViewModel: ObservableObject {
         }
     }
     
-    func deleteGoal(_ goal: Goal) async {
+    func deleteGoal(goal: Goal) async {
         guard let id = goal.id else { return }
         
         do {

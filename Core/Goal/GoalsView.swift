@@ -1,8 +1,10 @@
 import SwiftUI
+import ConfettiSwiftUI
 
 struct GoalsView: View {
     @StateObject private var viewModel = GoalsViewModel()
     @State var inputText: String = ""
+    @State private var trigger: Int = 0
     
     var body: some View {
         VStack {
@@ -13,7 +15,10 @@ struct GoalsView: View {
                 ForEach(viewModel.goals) { goal in
                     Button {
                         Task {
-                            await viewModel.toggleCompletedGoal(goal)
+                            if !goal.isDone {
+                                trigger += 1
+                            }
+                            await viewModel.toggleCompletedGoal(goal: goal)
                         }
                     } label: {
                         HStack {
@@ -27,7 +32,7 @@ struct GoalsView: View {
                 .onDelete { indexSet in
                     guard let index = indexSet.first else { return }
                     Task {
-                        await viewModel.deleteGoal(viewModel.goals[index])
+                        await viewModel.deleteGoal(goal: viewModel.goals[index])
                     }
                 }
             }
@@ -47,6 +52,15 @@ struct GoalsView: View {
             .padding(.horizontal)
             .padding(.bottom, 20)
         }
+        .confettiCannon(
+            trigger: $trigger,
+            num: 50,
+            colors: [.purple, .orange],
+            rainHeight: 1000,
+            openingAngle: Angle(degrees: 0),
+            closingAngle: Angle(degrees: 360),
+            radius: 300
+        )
     }
 }
 
