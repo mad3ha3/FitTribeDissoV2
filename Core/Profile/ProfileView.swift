@@ -8,17 +8,17 @@
 import SwiftUI
 import FirebaseAuth
 
-//displays user profile information w sign out option
+//displays current user profile information w sign out option
 struct ProfileView: View {
     let user: User?
     @State private var showingSignOutAlert = false
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var authViewModel: AuthViewModel
+    @StateObject private var followViewModel = FollowViewModel()
     
     var displayedUser: User? {
         user ?? authViewModel.currentUser
     }
-    
     
     var body: some View {
         NavigationStack {
@@ -41,6 +41,13 @@ struct ProfileView: View {
                             Text(displayedUser.email)
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
+                            
+                            // Add ProfileStatsView here
+                            ProfileStatsView(
+                                followers: followViewModel.followersCount,
+                                following: followViewModel.followingCount
+                            )
+                            .padding(.top, 8)
                         }
                         .padding(.vertical, 4)
                     } else {
@@ -74,6 +81,13 @@ struct ProfileView: View {
                 }
             } message: {
                 Text("Are you sure you want to sign out?")
+            }
+            .onAppear {
+                Task {
+                    if let userId = displayedUser?.id {
+                        await followViewModel.fetchFollowCounts(for: userId)
+                    }
+                }
             }
         }
         .presentationDetents([.medium, .large])

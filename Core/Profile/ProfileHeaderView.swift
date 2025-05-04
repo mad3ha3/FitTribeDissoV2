@@ -15,7 +15,7 @@ struct ProfileHeaderView: View {
                 .font(.title2)
                 .fontWeight(.semibold)
 
-            // Show email if it exists (you can hide this for public profiles)
+            // Show email if it exists 
             if !user.email.isEmpty {
                 Text(user.email)
                     .font(.subheadline)
