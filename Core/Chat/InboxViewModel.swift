@@ -10,6 +10,7 @@ class InboxViewModel: ObservableObject {
     private var documentChanges: [DocumentChange] = []
     
     private var cancellables = Set<AnyCancellable>()
+    private let db = Firestore.firestore()
     
     init() {
         setupSubscribers()
@@ -57,6 +58,55 @@ class InboxViewModel: ObservableObject {
                 messages[i].user = user
                 self.recentMessages.append(messages[i])
             }
+        }
+    }
+    
+    @MainActor
+    func deleteChat(message: Message) async {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        do {
+            // Delete recent message for current user
+            try await db.collection("messages")
+                .document(uid)
+                .collection("recent-messages")
+                .document(message.chatPartnerId)
+                .delete()
+            
+            // Delete recent message for chat partner
+            try await db.collection("messages")
+                .document(message.chatPartnerId)
+                .collection("recent-messages")
+                .document(uid)
+                .delete()
+            
+            // Delete all messages in the chat
+            let messagesSnapshot = try await db.collection("messages")
+                .document(uid)
+                .collection(message.chatPartnerId)
+                .getDocuments()
+            
+            for doc in messagesSnapshot.documents {
+                try await doc.reference.delete()
+            }
+            
+            // Delete partner's copy of messages
+            let partnerMessagesSnapshot = try await db.collection("messages")
+                .document(message.chatPartnerId)
+                .collection(uid)
+                .getDocuments()
+            
+            for doc in partnerMessagesSnapshot.documents {
+                try await doc.reference.delete()
+            }
+            
+            // Update local state
+            await MainActor.run {
+                self.recentMessages.removeAll { $0.chatPartnerId == message.chatPartnerId }
+            }
+            
+        } catch {
+            print("DEBUG: Failed to delete chat: \(error.localizedDescription)")
         }
     }
 }

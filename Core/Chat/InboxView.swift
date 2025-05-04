@@ -60,6 +60,15 @@ struct InboxView: View {
                 messageRow(message: message)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            Task {
+                                await viewModel.deleteChat(message: message)
+                            }
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
             }
         }
         .listStyle(.plain)
