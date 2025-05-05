@@ -24,14 +24,13 @@ class LeaderboardViewModel: ObservableObject {
     
     func fetchLeaderboard(showFriendsOnly: Bool = false) async {
         isLoading = true
-        print("DEBUG: ===== Starting Leaderboard Fetch =====")
+       
         
         do {
-            print("DEBUG: Attempting to connect to Firestore...")
+            
             // First, get all users
             let usersSnapshot = try await db.collection("users").getDocuments() //fetches all registered users from firestore
-            print("DEBUG: Successfully connected to Firestore")
-            print("DEBUG: Found \(usersSnapshot.documents.count) users in the database")
+            
             
             if usersSnapshot.documents.isEmpty {
                 print("DEBUG: WARNING - No users found in the database")
@@ -48,17 +47,14 @@ class LeaderboardViewModel: ObservableObject {
                     continue
                 }
                 
-                print("\nDEBUG: Processing user with ID: \(userId)")
-                
-                // Print the raw document data
-                print("DEBUG: Raw user data: \(document.data())")
+            
                 
                 let attendanceCount = await gymAttendanceViewModel.getAttendanceCount(for: userId) //count attendance entries for each user
-                print("DEBUG: User \(userId) has \(attendanceCount) attendance points")
+                
                 
                 do {
                     let user = try document.data(as: User.self)
-                    print("DEBUG: Successfully decoded user: \(user.fullname)")
+                    
                     //add user to leaderboard
                     leaderboardUsers.append(LeaderboardUser(
                         id: userId,
@@ -66,20 +62,18 @@ class LeaderboardViewModel: ObservableObject {
                         points: attendanceCount  //the attendance count is the points for the leaderboard
                     ))
                 } catch {
-                    print("DEBUG: ERROR - Failed to decode user data for ID: \(userId)")
+                    
                     print("DEBUG: Error details: \(error)")
-                    print("DEBUG: Document data that failed to decode: \(document.data())")
+                    
                 }
             }
             
             // users are sorted by descending order
             self.users = leaderboardUsers.sorted { $0.points > $1.points }
-            print("\nDEBUG: Leaderboard updated with \(self.users.count) users")
-            print("DEBUG: ===== Leaderboard Fetch Complete =====")
+            
             isLoading = false
         } catch {
-            print("DEBUG: ERROR - Failed to fetch leaderboard: \(error.localizedDescription)")
-            print("DEBUG: Error details: \(error)")
+            
             errorMessage = "Failed to fetch leaderboard"
             isLoading = false
         }
