@@ -66,21 +66,14 @@ class InboxViewModel: ObservableObject {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
         do {
-            // Delete recent message for current user
+            // Delete current user's recent message
             try await db.collection("messages")
                 .document(uid)
                 .collection("recent-messages")
                 .document(message.chatPartnerId)
                 .delete()
             
-            // Delete recent message for chat partner
-            try await db.collection("messages")
-                .document(message.chatPartnerId)
-                .collection("recent-messages")
-                .document(uid)
-                .delete()
-            
-            // Delete all messages in the chat
+            // Delete current user's copy of messages
             let messagesSnapshot = try await db.collection("messages")
                 .document(uid)
                 .collection(message.chatPartnerId)
@@ -90,20 +83,8 @@ class InboxViewModel: ObservableObject {
                 try await doc.reference.delete()
             }
             
-            // Delete partner's copy of messages
-            let partnerMessagesSnapshot = try await db.collection("messages")
-                .document(message.chatPartnerId)
-                .collection(uid)
-                .getDocuments()
-            
-            for doc in partnerMessagesSnapshot.documents {
-                try await doc.reference.delete()
-            }
-            
             // Update local state
-            await MainActor.run {
-                self.recentMessages.removeAll { $0.chatPartnerId == message.chatPartnerId }
-            }
+            self.recentMessages.removeAll { $0.chatPartnerId == message.chatPartnerId }
             
         } catch {
             print("DEBUG: Failed to delete chat: \(error.localizedDescription)")
