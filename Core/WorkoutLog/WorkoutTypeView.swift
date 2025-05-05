@@ -3,6 +3,8 @@ import SwiftUI
 struct WorkoutTypeView: View {
     @ObservedObject var viewModel: WorkoutViewModel
     @State private var showingAddWorkoutType = false
+    @State private var typeToDelete: String? = nil
+    @State private var showingDeleteAlert = false
     
     var body: some View {
         NavigationStack {
@@ -12,8 +14,13 @@ struct WorkoutTypeView: View {
                     GridItem(.flexible(), spacing: 16)
                 ], spacing: 16) {
                     ForEach(viewModel.workoutTypes, id: \.self) { type in
-                        NavigationLink(destination: WorkoutDetailView(workoutType: type)) {
-                            WorkoutTypeCardView(type: type)
+                        ZStack {
+                            NavigationLink(destination: WorkoutDetailView(workoutType: type)) {
+                                WorkoutTypeCardView(type: type) {
+                                    typeToDelete = type
+                                    showingDeleteAlert = true
+                                }
+                            }
                         }
                     }
                     
@@ -41,6 +48,20 @@ struct WorkoutTypeView: View {
             .navigationTitle("Workout Types")
             .sheet(isPresented: $showingAddWorkoutType) {
                 AddWorkoutTypeView(viewModel: viewModel)
+            }
+            .alert("Delete Workout Type", isPresented: $showingDeleteAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Delete", role: .destructive) {
+                    if let type = typeToDelete {
+                        Task {
+                            await viewModel.deleteWorkoutType(type: type)
+                        }
+                    }
+                }
+            } message: {
+                if let type = typeToDelete {
+                    Text("Are you sure you want to delete '\(type)'? This action cannot be undone.")
+                }
             }
             .overlay {
                 if viewModel.isLoading {

@@ -121,4 +121,41 @@ class WorkoutViewModel: ObservableObject {
             self.errorMessage = "Failed to add workout type: \(error.localizedDescription)"
         }
     }
+    
+    func deleteWorkout(workout: Workout) async {
+        guard let id = workout.id else { return }
+        
+        do {
+            try await db.collection("workouts").document(id).delete()
+            // Remove the workout from local array instead of fetching
+            workouts.removeAll { $0.id == id }
+        } catch {
+            print("DEBUG: Error deleting workout: \(error.localizedDescription)")
+            self.errorMessage = "Failed to delete workout: \(error.localizedDescription)"
+        }
+    }
+    
+    func deleteWorkoutType(type: String) async {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        do {
+            // Get the document reference for this workout type
+            let snapshot = try await db.collection("users")
+                .document(userId)
+                .collection("workoutTypes")
+                .whereField("name", isEqualTo: type)
+                .getDocuments()
+            
+            // Delete the document if found
+            if let document = snapshot.documents.first {
+                try await document.reference.delete()
+                // Update local state
+                workoutTypes.removeAll { $0 == type }
+                print("DEBUG: Deleted workout type: \(type)")
+            }
+        } catch {
+            print("DEBUG: Error deleting workout type: \(error.localizedDescription)")
+            self.errorMessage = "Failed to delete workout type: \(error.localizedDescription)"
+        }
+    }
 }

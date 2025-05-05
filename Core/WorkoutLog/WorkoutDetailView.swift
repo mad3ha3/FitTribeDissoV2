@@ -21,6 +21,12 @@ struct WorkoutDetailView: View {
                 ForEach(workoutsForType) { workout in
                     WorkoutRow(workout: workout)
                 }
+                .onDelete { indexSet in
+                    guard let index = indexSet.first else { return }
+                    Task {
+                        await viewModel.deleteWorkout(workout: workoutsForType[index])
+                    }
+                }
             }
         }
         .listStyle(.plain)

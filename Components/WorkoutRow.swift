@@ -1,9 +1,4 @@
-//
-//  WorkoutRow.swift
-//  disso
-//
-//  Created by Madeha Ahmed on 03/05/2025.
-//
+
 
 import SwiftUI
 
@@ -18,14 +13,15 @@ struct WorkoutRow: View {
                 
                 Spacer()
                 
-                if workout.type == "Strength" {
-                    if let sets = workout.sets, let reps = workout.reps {
-                        Text("\(sets)x\(reps)")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                } else if let duration = workout.duration, duration > 0 {
+                // Show both duration and sets/reps if available
+                if let duration = workout.duration, duration > 0 {
                     Text("\(duration) min")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                
+                if let sets = workout.sets, let reps = workout.reps {
+                    Text(" • \(sets)x\(reps)")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -38,6 +34,13 @@ struct WorkoutRow: View {
                 
                 Spacer()
                 
+                // Add date display
+                Text(workout.date, style: .date)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            HStack {
                 Text("\(workout.caloriesBurned) cal")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
