@@ -17,7 +17,7 @@ struct WorkoutTypeCardView: View {
             
             Image(systemName: "figure.mixed.cardio")
                 .font(.system(size: 40))
-                .foregroundColor(.blue)
+                .foregroundColor(Color("AppOrange"))
             
             Text(type)
                 .font(.headline)

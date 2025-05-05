@@ -41,7 +41,7 @@ struct LeaderboardRow: View {
         case 1: return .yellow
         case 2: return .gray
         case 3: return .brown
-        default: return .blue
+        default: return .teal
         }
     }
 }

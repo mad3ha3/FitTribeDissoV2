@@ -2,23 +2,23 @@ import SwiftUI
 import ConfettiSwiftUI
 
 struct GoalsView: View {
-    @StateObject private var viewModel = GoalsViewModel()
+    @ObservedObject var goalsViewModel: GoalsViewModel
     @State var inputText: String = ""
     @State private var trigger: Int = 0
     
     var body: some View {
         VStack {
-            if viewModel.isLoading {
+            if goalsViewModel.isLoading {
                 ProgressView("Showing your goals...")
             }
             List {
-                ForEach(viewModel.goals) { goal in
+                ForEach(goalsViewModel.goals) { goal in
                     Button {
                         Task {
                             if !goal.isDone {
                                 trigger += 1
                             }
-                            await viewModel.toggleCompletedGoal(goal: goal)
+                            await goalsViewModel.toggleCompletedGoal(goal: goal)
                         }
                     } label: {
                         HStack {
@@ -32,7 +32,7 @@ struct GoalsView: View {
                 .onDelete { indexSet in
                     guard let index = indexSet.first else { return }
                     Task {
-                        await viewModel.deleteGoal(goal: viewModel.goals[index])
+                        await goalsViewModel.deleteGoal(goal: goalsViewModel.goals[index])
                     }
                 }
             }
@@ -44,7 +44,7 @@ struct GoalsView: View {
                 Button("Add") {
                     guard !inputText.isEmpty else { return }
                     Task {
-                        await viewModel.addGoal(name: inputText)
+                        await goalsViewModel.addGoal(name: inputText)
                         inputText = ""
                     }
                 }
@@ -65,7 +65,7 @@ struct GoalsView: View {
 }
 
 #Preview {
-    GoalsView()
+    GoalsView(goalsViewModel: GoalsViewModel())
 }
 
 

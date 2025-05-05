@@ -34,14 +34,12 @@ struct UserProfileView: View {
                     Text(followViewModel.isFollowed ? "Unfollow" : "Follow")
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(followViewModel.isFollowed ? Color.gray : Color.blue)
+                        .background(followViewModel.isFollowed ? Color.gray : Color("AppOrange"))
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }
 
                 Divider()
-
-                // Optional: show user's recent workouts
             }
             .padding()
             .navigationTitle(user.fullname)

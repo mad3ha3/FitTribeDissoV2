@@ -14,6 +14,8 @@ class GoalsViewModel: ObservableObject {
     @Published var goals: [Goal] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var allGoals: Int = 0
+    @Published var completedGoals: Int = 0
     
     private let db = Firestore.firestore()
     
@@ -50,11 +52,17 @@ class GoalsViewModel: ObservableObject {
                 }
             }
             print("DEBUG: Successfully loaded \(self.goals.count) goals")
+            self.updateGoalCount()
         } catch {
             print("DEBUG: Error fetching goals: \(error.localizedDescription)")
             errorMessage = "Failed to load goals: \(error.localizedDescription)"
         }
         isLoading = false
+    }
+    
+    func updateGoalCount() {
+        allGoals = goals.count
+        completedGoals = goals.filter {$0.isDone }.count
     }
     
     func addGoal(name: String) async {
@@ -74,6 +82,7 @@ class GoalsViewModel: ObservableObject {
             var goalWithId = newGoal
             goalWithId.id = docRef.documentID
             goals.append(goalWithId)
+            updateGoalCount()
         } catch {
             errorMessage = "failed to add goal: \(error.localizedDescription)"
         }
@@ -91,6 +100,7 @@ class GoalsViewModel: ObservableObject {
             if let index = goals.firstIndex(where: { $0.id == id }) {
                 goals[index].isDone = updatedGoal.isDone
             }
+            updateGoalCount()
         } catch {
             errorMessage = "failed to toggle goal: \(error.localizedDescription)"
         }
@@ -103,6 +113,7 @@ class GoalsViewModel: ObservableObject {
             try await db.collection("goals").document(id).delete()
             // Remove the goal from local array instead of fetching
             goals.removeAll { $0.id == id }
+            updateGoalCount()
         } catch {
             errorMessage = "failed to delete goal: \(error.localizedDescription)"
         }

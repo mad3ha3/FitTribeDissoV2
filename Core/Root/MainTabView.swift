@@ -10,7 +10,7 @@ struct MainTabView: View {
                     Label("Home", systemImage: "house")
                 }
             
-            WorkoutLogView()
+            WorkoutTypeView(viewModel: WorkoutViewModel())
                 .tabItem {
                     Label("Workout", systemImage: "figure.run")
                 }

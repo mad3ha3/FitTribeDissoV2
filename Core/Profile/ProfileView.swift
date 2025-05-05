@@ -35,7 +35,7 @@ struct ProfileView: View {
                                     .font(.headline)
                                     .foregroundColor(.white)
                                     .frame(width: 40, height: 40)
-                                    .background(Circle().fill(Color.blue))
+                                    .background(Circle().fill(Color("AppOrange")))
                             }
                             
                             Text(displayedUser.email)

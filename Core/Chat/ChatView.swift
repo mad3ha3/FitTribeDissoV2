@@ -18,7 +18,7 @@ struct ChatView: View {
                         .font(.title3)
                         .fontWeight(.semibold)
                     
-                    Text("messenger")
+                    Text("messages")
                         .font(.footnote)
                         .foregroundColor(.gray)
                 }

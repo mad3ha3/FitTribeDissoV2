@@ -29,16 +29,9 @@ struct InboxView: View {
                 .fullScreenCover(isPresented: $showNewMessageView) {
                     NewMessageView(selectedUser: $selectedUser)
                 }
-                .navigationBarTitle("", displayMode: .inline)
+                .navigationTitle("Chats")
+                .navigationBarTitleDisplayMode(.large)
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        HStack {
-                            Text("Chats")
-                                .font(.title)
-                                .fontWeight(.semibold)
-                        }
-                    }
-                    
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
                             showNewMessageView.toggle()

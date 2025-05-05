@@ -31,7 +31,7 @@ struct WorkoutTypeView: View {
                         VStack {
                             Image(systemName: "plus.circle.fill")
                                 .font(.system(size: 40))
-                                .foregroundColor(.blue)
+                                .foregroundColor(.cyan)
                             Text("Add Workout Type")
                                 .font(.headline)
                                 .foregroundColor(.primary)

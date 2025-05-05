@@ -10,7 +10,7 @@ struct NewMessageView: View {
     var body: some View {
         NavigationStack {
             ScrollView{
-                TextField("to: ", text: $searchText)
+                TextField("Search Users ", text: $searchText)
                     .frame(height: 44)
                     .padding(.leading)
                     .background(Color(.systemGroupedBackground))

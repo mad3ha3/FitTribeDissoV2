@@ -16,8 +16,7 @@ struct AddWorkoutTypeView: View {
                 Button {
                     if !newTypeName.isEmpty {
                         Task {
-                            await viewModel.addWorkoutType(type:
-                                                            newTypeName)
+                            await viewModel.addWorkoutType(type: newTypeName)
                             dismiss()
                         }
                     }
@@ -27,7 +26,7 @@ struct AddWorkoutTypeView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(newTypeName.isEmpty ? Color.gray : Color.blue)
+                        .background(newTypeName.isEmpty ? Color.gray : Color.cyan)
                         .cornerRadius(10)
                 }
                 .disabled(newTypeName.isEmpty)
