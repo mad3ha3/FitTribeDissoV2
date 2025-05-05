@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 //the main home screen of the app, what user sees when they first log in
 struct HomeView: View {
@@ -14,6 +15,7 @@ struct HomeView: View {
     @StateObject private var gymAttendanceViewModel = GymAttendanceViewModel()
     @State private var showingCheckInAlert = false
     @State private var checkInSuccess = false
+    @AppStorage("notificationScheduled") private var notificationScheduled = false
     
     var body: some View {
         NavigationStack {
@@ -22,19 +24,11 @@ struct HomeView: View {
                     .font(.title)
                     .fontWeight(.bold)
                 
-                HStack {
-                    VStack{
-                        Image(systemName: "flame.fill")
-                            .font(.largeTitle)
-                            .foregroundColor(.yellow)
-                        Text("Badge: Bronze")
-                    }
-                }
                 
                 //monthly goals
                 NavigationLink(destination: GoalsView()) {
-                    VStack(alignment: .leading, spacing: 8){
-                        Text("Your Goals")
+                    VStack(alignment: .center, spacing: 8){
+                        Text("Goals")
                             .font(.headline)
                             .foregroundColor(.primary)
                         
@@ -44,8 +38,8 @@ struct HomeView: View {
                     }
                     .padding()
                     .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(.systemGray6))
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(.orange, lineWidth: 1)
                     )
                 }
                 .padding(.horizontal)
@@ -53,6 +47,7 @@ struct HomeView: View {
                 //log gym attendance button
                 Button {
                     showingCheckInAlert = true
+                    
                 } label: {
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
@@ -64,7 +59,7 @@ struct HomeView: View {
                     .padding()
                     .background(
                         RoundedRectangle(cornerRadius: 10)
-                            .fill(gymAttendanceViewModel.hasCheckedInToday ? Color.gray : Color.blue)
+                            .fill(gymAttendanceViewModel.hasCheckedInToday ? Color.gray : Color.orange)
                     )
                 }
                 .disabled(gymAttendanceViewModel.hasCheckedInToday)
@@ -84,7 +79,7 @@ struct HomeView: View {
                     .padding()
                     .background(
                         RoundedRectangle(cornerRadius: 10)
-                            .fill(Color.blue)
+                            .fill(Color.orange)
                     )
                 }
                 .padding(.horizontal)
@@ -92,26 +87,33 @@ struct HomeView: View {
                 Spacer()
             }
             .padding()
-            .navigationTitle("Home")
+            //.navigationTitle("Home")
             .sheet(isPresented: $showSearch) {
                 SearchUserView()
             }
         }
-        .alert("Check In", isPresented: $showingCheckInAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Confirm") {
-                Task {
-                    checkInSuccess = await gymAttendanceViewModel.checkIn()
-                }
+        .onAppear {
+            if !notificationScheduled {
+                Notification.shared.checkNotificationPermission()
+                Notification.shared.dispatchDailyNotification()
+                notificationScheduled = true
             }
-        } message: {
-            Text("Are you sure you want to check in?")
         }
-        .alert("Success", isPresented: $checkInSuccess) {
-            Button("OK") { }
-        } message: {
-            Text("You have successfully checked in!")
-        }
+                .alert("Check In", isPresented: $showingCheckInAlert) {
+                    Button("Cancel", role: .cancel) { }
+                    Button("Confirm") {
+                        Task {
+                            checkInSuccess = await gymAttendanceViewModel.checkIn()
+                        }
+                    }
+                } message: {
+                    Text("Are you sure you want to check in?")
+                }
+                .alert("Success", isPresented: $checkInSuccess) {
+                    Button("OK") { }
+                } message: {
+                    Text("You have successfully checked in!")
+                }
     }
 }
 
