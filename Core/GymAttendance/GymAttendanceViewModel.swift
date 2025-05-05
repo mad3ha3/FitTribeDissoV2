@@ -47,10 +47,7 @@ class GymAttendanceViewModel: ObservableObject {
     }
     
     func checkIn() async -> Bool {
-        guard let userId = Auth.auth().currentUser?.uid else {
-            print("DEBUG: No user ID found when checking in")
-            return false
-        }
+        guard let userId = Auth.auth().currentUser?.uid else { return false }
         guard !hasCheckedInToday else { return false }
         
         isLoading = true
