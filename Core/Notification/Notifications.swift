@@ -1,11 +1,9 @@
-
-
 import Foundation
 import UserNotifications
 
-class Notification {
+class NotificationManager {
     
-    static let shared = Notification()
+    static let shared = NotificationManager()
     
     private init() {}
     
@@ -13,6 +11,7 @@ class Notification {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { allowed, error in
             if allowed {
                 print("Notifications Allowed!")
+                self.dispatchDailyNotification()
             } else {
                 print("Permission denied")
             }
@@ -40,7 +39,6 @@ class Notification {
                 print("notification scheduled")
             }
         }
-        
     }
     
     func cancelNotifications() {

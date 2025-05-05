@@ -11,8 +11,9 @@ import FirebaseAuth
 //the main home screen of the app, what user sees when they first log in
 struct HomeView: View {
     @State private var showSearch = false
-    @EnvironmentObject var authViewModel: AuthViewModel //access tp the authentication state and current user info
+    @EnvironmentObject var authViewModel: AuthViewModel //access to the authentication state and current user info
     @StateObject private var gymAttendanceViewModel = GymAttendanceViewModel()
+    @StateObject private var goalsViewModel = GoalsViewModel()
     @State private var showingCheckInAlert = false
     @State private var checkInSuccess = false
     @AppStorage("notificationScheduled") private var notificationScheduled = false
@@ -24,23 +25,9 @@ struct HomeView: View {
                     .font(.title)
                     .fontWeight(.bold)
                 
-                
-                //monthly goals
-                NavigationLink(destination: GoalsView()) {
-                    VStack(alignment: .center, spacing: 8){
-                        Text("Goals")
-                            .font(.headline)
-                            .foregroundColor(.primary)
-                        
-                        Text("Tap to view or add your goals")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(.orange, lineWidth: 1)
-                    )
+                // goals
+                NavigationLink(destination: GoalsView(goalsViewModel: goalsViewModel)) {
+                     GoalsProgressCard(goalsViewModel: goalsViewModel)
                 }
                 .padding(.horizontal)
                 
@@ -59,7 +46,7 @@ struct HomeView: View {
                     .padding()
                     .background(
                         RoundedRectangle(cornerRadius: 10)
-                            .fill(gymAttendanceViewModel.hasCheckedInToday ? Color.gray : Color.orange)
+                            .fill(gymAttendanceViewModel.hasCheckedInToday ? Color.gray : Color("AppOrange"))
                     )
                 }
                 .disabled(gymAttendanceViewModel.hasCheckedInToday)
@@ -79,7 +66,7 @@ struct HomeView: View {
                     .padding()
                     .background(
                         RoundedRectangle(cornerRadius: 10)
-                            .fill(Color.orange)
+                            .fill(Color("AppOrange"))
                     )
                 }
                 .padding(.horizontal)
@@ -94,18 +81,17 @@ struct HomeView: View {
         }
         .onAppear {
             if !notificationScheduled {
-                Notification.shared.checkNotificationPermission()
-                Notification.shared.dispatchDailyNotification()
+                NotificationManager.shared.checkNotificationPermission()
                 notificationScheduled = true
             }
         }
-                .alert("Check In", isPresented: $showingCheckInAlert) {
-                    Button("Cancel", role: .cancel) { }
-                    Button("Confirm") {
-                        Task {
-                            checkInSuccess = await gymAttendanceViewModel.checkIn()
-                        }
-                    }
+        .alert("Check In", isPresented: $showingCheckInAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Confirm") {
+                Task {
+                    checkInSuccess = await gymAttendanceViewModel.checkIn()
+                }
+            }
                 } message: {
                     Text("Are you sure you want to check in?")
                 }
@@ -114,6 +100,38 @@ struct HomeView: View {
                 } message: {
                     Text("You have successfully checked in!")
                 }
+    }
+}
+
+struct GoalsProgressCard: View {
+    @ObservedObject var goalsViewModel: GoalsViewModel
+
+    var body: some View {
+        VStack(alignment: .center, spacing: 8) {
+            Text("Goals")
+                .font(.headline)
+                .foregroundColor(.primary)
+
+            if goalsViewModel.allGoals > 0 {
+                ProgressView(
+                    value: Double(goalsViewModel.completedGoals),
+                    total: Double(goalsViewModel.allGoals)
+                )
+                .accentColor(Color("AppOrange"))
+                Text("\(goalsViewModel.completedGoals) of \(goalsViewModel.allGoals) completed")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            } else {
+                Text("Tap to view your goals")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color("AppOrange"), lineWidth: 1)
+        )
     }
 }
 
