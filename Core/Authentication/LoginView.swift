@@ -12,6 +12,8 @@ import SwiftUI
 struct LoginView: View {
     @State private var email = ""
     @State private var password = ""
+    @State private var errorMessage: String? = nil
+    @State private var showLoginErrorAlert = false
     @EnvironmentObject var viewModel: AuthViewModel
     var body: some View {
         NavigationStack {
@@ -42,7 +44,13 @@ struct LoginView: View {
                 
                 Button {
                     Task {
-                        try await viewModel.signIn(withEmail: email, password: password)
+                        do {
+                            try await viewModel.signIn(withEmail: email, password: password)
+                            errorMessage = nil
+                        } catch {
+                            errorMessage = "User email and password do not match, please try again!"
+                            showLoginErrorAlert = true
+                        }
                     }
                 } label: {
                     HStack {
@@ -78,6 +86,11 @@ struct LoginView: View {
                 }
                 
             }
+        }
+        .alert("Login Failed", isPresented: $showLoginErrorAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage ?? "Error has occurred")
         }
     }
 }

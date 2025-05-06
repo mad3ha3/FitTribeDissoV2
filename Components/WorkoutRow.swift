@@ -13,7 +13,6 @@ struct WorkoutRow: View {
                 
                 Spacer()
                 
-                // Show both duration and sets/reps if available
                 if let duration = workout.duration, duration > 0 {
                     Text("\(duration) min")
                         .font(.subheadline)
@@ -21,7 +20,7 @@ struct WorkoutRow: View {
                 }
                 
                 if let sets = workout.sets, let reps = workout.reps {
-                    Text(" • \(sets)x\(reps)")
+                    Text(" \(sets)x\(reps)")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }

@@ -149,9 +149,9 @@ class WorkoutViewModel: ObservableObject {
             // Delete the document if found
             if let document = snapshot.documents.first {
                 try await document.reference.delete()
-                // Update local state
-                workoutTypes.removeAll { $0 == type }
-                print("DEBUG: Deleted workout type: \(type)")
+            // Update local state
+            workoutTypes.removeAll { $0 == type }
+            print("DEBUG: Deleted workout type: \(type)")
             }
         } catch {
             print("DEBUG: Error deleting workout type: \(error.localizedDescription)")

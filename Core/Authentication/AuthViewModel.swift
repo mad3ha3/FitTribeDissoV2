@@ -37,6 +37,7 @@ class AuthViewModel: ObservableObject{
             await fetchUser()
         } catch {
             print("DEBUG: USER SIGN IN FAILED \(error.localizedDescription)")
+            throw error
         }
     }
     
@@ -67,7 +68,6 @@ class AuthViewModel: ObservableObject{
         }
     }
 
-    //func deleteAccount() {}
 
     //fetches the user document from firestore and decodes into a 'User' object
     func fetchUser() async {

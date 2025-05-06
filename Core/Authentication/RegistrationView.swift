@@ -31,7 +31,7 @@ struct RegistrationView: View {
                 
                 InputView(text: $email,
                           title: "Email Address",
-                          placeholder: "name@eample.com")
+                          placeholder: "name@example.com")
                 .autocapitalization(.none) //avoids capitalising email field accidentally
                 
                 InputView(text: $fullname,

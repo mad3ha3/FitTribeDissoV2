@@ -15,7 +15,7 @@ struct LeaderboardRow: View {
                 .background(Circle().fill(rankColor))
                 .foregroundColor(.white)
             
-            // User Info
+            // the users name and points
             VStack(alignment: .leading, spacing: 4) {
                 Text(user.fullname)
                     .font(.headline)
@@ -26,7 +26,7 @@ struct LeaderboardRow: View {
             
             Spacer()
             
-            // Trophy Icon for Top 3
+            // this adds the trophy icon for Top 3 users in the leaderboard
             if rank <= 3 {
                 Image(systemName: rank == 1 ? "trophy.fill" : "medal.fill")
                     .foregroundColor(rank == 1 ? .yellow : rank == 2 ? .gray : .brown)

@@ -11,6 +11,7 @@ class LeaderboardViewModel: ObservableObject {
     @Published var errorMessage: String?  //error message for ui feedback
     @Published var isLoading = false //ui loading state
     @Published var followedUserIds: [String] = []
+    @Published var userPoint: Int = 0
     
     private let db = Firestore.firestore()
     private let gymAttendanceViewModel = GymAttendanceViewModel()  //used to count check in per user
@@ -25,17 +26,13 @@ class LeaderboardViewModel: ObservableObject {
     func fetchLeaderboard(showFriendsOnly: Bool = false) async {
         isLoading = true
        
-        
         do {
-            
             // First, get all users
             let usersSnapshot = try await db.collection("users").getDocuments() //fetches all registered users from firestore
-            
-            
             if usersSnapshot.documents.isEmpty {
                 print("DEBUG: WARNING - No users found in the database")
             }
-            
+    
             var leaderboardUsers: [LeaderboardUser] = []
             let currentUserId = Auth.auth().currentUser?.uid
             
@@ -47,10 +44,10 @@ class LeaderboardViewModel: ObservableObject {
                     continue
                 }
                 
-            
-                
                 let attendanceCount = await gymAttendanceViewModel.getAttendanceCount(for: userId) //count attendance entries for each user
-                
+                if userId == currentUserId{
+                    self.userPoint = attendanceCount
+                }
                 
                 do {
                     let user = try document.data(as: User.self)

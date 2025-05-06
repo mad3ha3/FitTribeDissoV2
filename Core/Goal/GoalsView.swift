@@ -25,7 +25,12 @@ struct GoalsView: View {
                             Image(systemName: goal.isDone ? "checkmark.square.fill" : "square")
                                 .resizable()
                                 .frame(width: 24, height: 24)
-                            Text(goal.name)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(goal.name)
+                                Text(goal.timestamp, style: .date)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
                         }
                     }
                 }
