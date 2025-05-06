@@ -7,8 +7,9 @@
 
 import Foundation
 
+//this model is used for a user in the leaderboard
 struct LeaderboardUser: Identifiable {
-    let id: String
-    let fullname: String
-    let points: Int
+    let id: String //user id
+    let fullname: String // users full name
+    let points: Int //users point
 }

@@ -6,7 +6,7 @@
 //
 import SwiftUI
 
-
+//presents the searched users profile with an option to follow/unfollow
 struct UserProfileView: View {
     let user: User
     @StateObject private var followViewModel = FollowViewModel()
@@ -15,13 +15,15 @@ struct UserProfileView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
+                //shows initials, name and email
                 ProfileHeaderView(user: user)
-
+                //shows searched users followers and following
                 ProfileStatsView(
                     followers: followViewModel.followersCount,
                     following: followViewModel.followingCount
                 )
-
+                
+                //follow/unfollow button functioanlity
                 Button(action: {
                     Task {
                         if followViewModel.isFollowed {
@@ -46,6 +48,7 @@ struct UserProfileView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .onAppear {
+            //shows the follow status when the view appears
             Task {
                 if let currentId = authViewModel.currentUser?.id {
                     await followViewModel.checkFollowStatus(currentUserId: currentId, targetUserId: user.id)
