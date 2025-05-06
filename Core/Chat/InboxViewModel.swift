@@ -4,10 +4,11 @@ import Firebase
 import FirebaseAuth
 import FirebaseFirestore
 
+// logic for the chat inbox, including recent messages and deleting chats
 class InboxViewModel: ObservableObject {
-    @Published var currentUser: User?
-    @Published var recentMessages = [Message]()
-    private var documentChanges: [DocumentChange] = []
+    @Published var currentUser: User? // current user
+    @Published var recentMessages = [Message]() // list of recent chat messages
+    private var documentChanges: [DocumentChange] = [] // tracks the chat changes 
     
     private var cancellables = Set<AnyCancellable>()
     private let db = Firestore.firestore()
@@ -23,6 +24,7 @@ class InboxViewModel: ObservableObject {
         }.store(in: &cancellables)
     }
     
+    // changes in recent messages are observed
     private func observeRecentMessages() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
@@ -42,14 +44,16 @@ class InboxViewModel: ObservableObject {
         }
     }
     
+    // loads and updates the recent messages list
     private func loadInitialMessages(fromChanges changes: [DocumentChange]) {
         var messages = changes.compactMap({ try? $0.document.data(as: Message.self) })
         
-        // Remove any existing messages with the same chatPartnerId
+        // Remove any old existing messages with the same chatPartnerId
         for message in messages {
             recentMessages.removeAll { $0.chatPartnerId == message.chatPartnerId }
         }
 
+        // fetch user info for each message and updates the list
         for i in 0 ..< messages.count {
             let message = messages[i]
             
@@ -61,6 +65,7 @@ class InboxViewModel: ObservableObject {
         }
     }
     
+    // deletes chat for current user
     @MainActor
     func deleteChat(message: Message) async {
         guard let uid = Auth.auth().currentUser?.uid else { return }

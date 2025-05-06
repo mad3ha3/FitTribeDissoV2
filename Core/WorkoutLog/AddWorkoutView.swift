@@ -10,8 +10,9 @@ import SwiftUI
 struct AddWorkoutView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var workoutViewModel: WorkoutViewModel
-    let preselectedType: String
+    let preselectedType: String // type of workout that is passed from detail view
     
+    //input for the add workout form states
     @State private var workoutName = ""
     @State private var duration = 0
     @State private var caloriesBurned = 0
@@ -28,19 +29,20 @@ struct AddWorkoutView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
+                //workout form section
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Workout Details")
                         .font(.headline)
                         .padding(.horizontal)
-                    
+                    //workout name
                     VStack(spacing: 16) {
                         TextField("Workout Name", text: $workoutName)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .textInputAutocapitalization(.never)
-                        
+                        // this is shown based on the name of the workout type card
                         Text("Type: \(preselectedType)")
                             .foregroundColor(.secondary)
-                        
+                        //date picker for the workout date
                         DatePicker(
                             "Date",
                             selection: $selectedDate,
@@ -48,6 +50,7 @@ struct AddWorkoutView: View {
                         )
                         .datePickerStyle(.compact)
                         
+                        //inputs for the values for the workout details
                         Stepper("Duration: \(duration) minutes", value: $duration, in: 1...Int.max)
                         
                         Stepper("Sets: \(sets)", value: $sets, in: 0...Int.max)
@@ -58,6 +61,7 @@ struct AddWorkoutView: View {
                     .padding(.horizontal)
                 }
                 
+                //add notes section
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Notes")
                         .font(.headline)
@@ -76,6 +80,7 @@ struct AddWorkoutView: View {
             .navigationTitle("Add Workout")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                //cancel button doesnt save the workout
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
                         dismiss()
@@ -83,6 +88,7 @@ struct AddWorkoutView: View {
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
+                    //saves the workout
                     Button("Save") {
                         saveWorkout()
                     }
@@ -92,6 +98,7 @@ struct AddWorkoutView: View {
         }
     }
     
+    //save the workout
     private func saveWorkout() {
         let workout = Workout(
             name: workoutName,
@@ -104,7 +111,7 @@ struct AddWorkoutView: View {
             sets: sets,
             reps: reps
         )
-        
+        //saves and closes the view
         Task {
             await workoutViewModel.addWorkout(workout: workout)
             dismiss()

@@ -1,5 +1,6 @@
 import SwiftUI
 
+//this is for each workout type card that is shown
 struct WorkoutTypeCardView: View {
     let type: String
     let onDelete: () -> Void
@@ -8,18 +9,18 @@ struct WorkoutTypeCardView: View {
         VStack(spacing: 12) {
             HStack {
                 Spacer()
-                Button(action: onDelete) {
+                Button(action: onDelete) { //delete button for each workout type card
                     Image(systemName: "trash")
                         .foregroundColor(.red)
                         .padding(8)
                 }
             }
             
-            Image(systemName: "figure.mixed.cardio")
+            Image(systemName: "figure.mixed.cardio") //image on each card front 
                 .font(.system(size: 40))
                 .foregroundColor(Color("AppOrange"))
             
-            Text(type)
+            Text(type) //each workout type card title is presented here
                 .font(.headline)
                 .foregroundColor(.primary)
                 .multilineTextAlignment(.center)

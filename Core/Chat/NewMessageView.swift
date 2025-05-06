@@ -1,15 +1,15 @@
-
-
 import SwiftUI
 
+// view for starting a new chat by selecting an user
 struct NewMessageView: View {
     @State private var searchText = ""
     @StateObject private var viewModel = NewMessageViewModel()
-    @Binding var selectedUser: User?
+    @Binding var selectedUser: User? //selected user to start a chat with
     @Environment(\.dismiss) var dismiss
     var body: some View {
         NavigationStack {
-            ScrollView{
+            ScrollView {
+                // search field for users 
                 TextField("Search Users ", text: $searchText)
                     .frame(height: 44)
                     .padding(.leading)
@@ -21,6 +21,7 @@ struct NewMessageView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
                 
+                // list of users to start a chat with
                 ForEach(viewModel.users) { user in
                     VStack {
                         HStack {
@@ -31,7 +32,6 @@ struct NewMessageView: View {
                             Text(user.fullname)
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
-                            
                             Spacer()
                         }
                         .padding(.leading)
@@ -39,16 +39,17 @@ struct NewMessageView: View {
                         Divider()
                             .padding(.leading, 40)
                     }
+                    // set selected user and dismiss
                     .onTapGesture {
-                        selectedUser = user
+                        selectedUser = user 
                         dismiss()
                     }
                 }
             }
             .navigationTitle("New Message")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar{
-                ToolbarItem(placement: .navigationBarLeading){
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
                         dismiss()
                     }

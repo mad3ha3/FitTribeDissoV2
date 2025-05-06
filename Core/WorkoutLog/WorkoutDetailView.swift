@@ -1,5 +1,6 @@
 import SwiftUI
 
+//handles the workout details view that is shown
 struct WorkoutDetailView: View {
     let workoutType: String
     @StateObject var viewModel = WorkoutViewModel()
@@ -19,8 +20,9 @@ struct WorkoutDetailView: View {
                     .listRowBackground(Color.clear)
             } else {
                 ForEach(workoutsForType) { workout in
-                    WorkoutRow(workout: workout)
+                    WorkoutRow(workout: workout) // each workout is displayed
                 }
+                //delete each workout, swipe to delete
                 .onDelete { indexSet in
                     guard let index = indexSet.first else { return }
                     Task {

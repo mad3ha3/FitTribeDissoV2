@@ -15,7 +15,7 @@ struct SearchUserView: View {
                 SearchBar(text: $viewModel.searchText, isSearching: .constant(true))
                     .padding(.vertical, 8)
                 
-                // Content
+                // Content of the search
                 if viewModel.isLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -27,7 +27,7 @@ struct SearchUserView: View {
                         Spacer()
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if viewModel.users.isEmpty {
+                } else if viewModel.users.isEmpty { //this is shown when there a no users found
                     VStack {
                         Spacer()
                         Text(viewModel.searchText.isEmpty ? 
@@ -37,6 +37,7 @@ struct SearchUserView: View {
                         Spacer()
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    //if users are found, details are shown and taken to userprofileview
                 } else {
                     List {
                         ForEach(viewModel.users) { user in
@@ -70,7 +71,7 @@ struct SearchUserView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
+                    Button("Cancel") { //dismisses view and shows homeview again
                         dismiss()
                     }
                 }

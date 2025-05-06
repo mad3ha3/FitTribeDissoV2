@@ -19,7 +19,7 @@ struct LeaderboardRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(user.fullname)
                     .font(.headline)
-                Text("\(user.points) \(user.points == 1 ? "point" : "points")")
+                Text("\(user.points) \(user.points == 1 ? "point" : "points")") //checks if the user has 1 point or more
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
@@ -36,6 +36,7 @@ struct LeaderboardRow: View {
         .padding(.vertical, 8)
     }
     
+    //private func that returns the color of the rank badge
     private var rankColor: Color {
         switch rank {
         case 1: return .yellow

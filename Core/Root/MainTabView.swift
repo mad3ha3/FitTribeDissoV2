@@ -1,5 +1,6 @@
 import SwiftUI
 
+//shows the tabs on the app
 struct MainTabView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     

@@ -12,9 +12,10 @@ import SwiftUI
 struct LoginView: View {
     @State private var email = ""
     @State private var password = ""
-    @State private var errorMessage: String? = nil
-    @State private var showLoginErrorAlert = false
+    @State private var errorMessage: String? = nil // error message for login
+    @State private var showLoginErrorAlert = false // controls error alert
     @EnvironmentObject var viewModel: AuthViewModel
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -30,7 +31,7 @@ struct LoginView: View {
                     InputView(text: $email,
                               title: "Email Address",
                               placeholder: "name@example.com")
-                    .autocapitalization(.none) //avoids capitalising email field accidentally
+                    .autocapitalization(.none) //avoids capitalising email field accidentally, they shodulnt be capitalised
                     InputView(text: $password,
                               title: "Password",
                               placeholder: "Enter Password",
@@ -40,8 +41,7 @@ struct LoginView: View {
                 .padding(.horizontal)
                 .padding(.top, 12)
                 
-                //sign in button
-                
+                // sign in button
                 Button {
                     Task {
                         do {
@@ -67,7 +67,6 @@ struct LoginView: View {
                 .cornerRadius(20)
                 .padding(.top, 20)
             
-                
                 Spacer()
                 
 
@@ -84,9 +83,9 @@ struct LoginView: View {
                     }
                     .font(.system(size:20))
                 }
-                
             }
         }
+        // error alert for login that doesnt work
         .alert("Login Failed", isPresented: $showLoginErrorAlert) {
             Button("OK", role: .cancel) { }
         } message: {
@@ -104,8 +103,6 @@ extension LoginView: AuthenticationFormProtocol{
         && !password.isEmpty
         && password.count > 5
     }
-    
-    
 }
 
 #Preview {

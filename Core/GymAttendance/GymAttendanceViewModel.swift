@@ -7,21 +7,19 @@ import SwiftUI
 class GymAttendanceViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var isLoading = false
-    @Published var hasCheckedInToday = false
+    @Published var hasCheckedInToday = false //tracks whther the user has checked in
     
     private let db = Firestore.firestore()
     
     init() {
         Task {
-            await checkIfUserHasCheckedInToday()
+            await checkIfUserHasCheckedInToday() //check if user has already check in to the gym
         }
     }
     
+    //checks for a check in for today
     func checkIfUserHasCheckedInToday() async {
-        guard let userId = Auth.auth().currentUser?.uid else {
-            print("DEBUG: No user ID found")
-            return
-        }
+        guard let userId = Auth.auth().currentUser?.uid else { return }
         
         do {
             // Get all attendance records for the user
@@ -38,14 +36,14 @@ class GymAttendanceViewModel: ObservableObject {
                 }
                 return false
             }
-            
-            hasCheckedInToday = !todayRecords.isEmpty
+            hasCheckedInToday = !todayRecords.isEmpty //if there is a doc match the current user has already checked in today
         } catch {
             print("DEBUG: Error checking attendance: \(error.localizedDescription)")
             errorMessage = "Failed to check attendance status"
         }
     }
     
+    //check in if current user has not checked in today
     func checkIn() async -> Bool {
         guard let userId = Auth.auth().currentUser?.uid else { return false }
         guard !hasCheckedInToday else { return false }
@@ -53,13 +51,14 @@ class GymAttendanceViewModel: ObservableObject {
         isLoading = true
         
         do {
+            //attedance record is created here
             let attendance = GymAttendance(
                 userId: userId,
                 timestamp: Date()
             )
             
             try db.collection("gymAttendance").addDocument(from: attendance)
-            hasCheckedInToday = true
+            hasCheckedInToday = true //this updates the state
             isLoading = false
             return true
         } catch {
@@ -70,18 +69,16 @@ class GymAttendanceViewModel: ObservableObject {
         }
     }
     
+    // counts the number of check ins for each user
     func getAttendanceCount(for userId: String) async -> Int {
-        print("DEBUG: Getting attendance count for user: \(userId)")
         do {
             let snapshot = try await db.collection("gymAttendance") //counts attendance records for a specific user
                 .whereField("userId", isEqualTo: userId)
                 .getDocuments()
             
-            print("DEBUG: Found \(snapshot.documents.count) attendance records for user \(userId)")
             return snapshot.documents.count //returns the total count as points for the leaderboard
         } catch {
             print("DEBUG: ERROR - Failed to get attendance count for user \(userId): \(error.localizedDescription)")
-            print("DEBUG: Error details: \(error)")
             return 0
         }
     }

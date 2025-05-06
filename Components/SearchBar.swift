@@ -21,7 +21,7 @@ struct SearchBar: View {
                 .autocapitalization(.none)
                 .autocorrectionDisabled()
                 .onTapGesture {
-                    isSearching = true
+                    isSearching = true //when the user taps, it sets the isSearching to true
                 }
             
             // Clear button

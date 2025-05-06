@@ -11,63 +11,60 @@ import FirebaseAuth
 
 @MainActor
 class GoalsViewModel: ObservableObject {
-    @Published var goals: [Goal] = []
+    @Published var goals: [Goal] = [] //stores the users goal
     @Published var isLoading = false
     @Published var errorMessage: String?
-    @Published var allGoals: Int = 0
-    @Published var completedGoals: Int = 0
+    @Published var allGoals: Int = 0 // total goals
+    @Published var completedGoals: Int = 0 // users completed goals
     
     private let db = Firestore.firestore()
     
     init() {
         Task{
-            await fetchGoals()
+            await fetchGoals() //auto fetches goals when vm is initialised
         }
     }
     
-    func fetchGoals() async {
-        guard let userId = Auth.auth().currentUser?.uid else { 
+    func fetchGoals() async { //fetches users goals for the current user
+        guard let userId = Auth.auth().currentUser?.uid else {
             print("DEBUG: No user ID found")
             return 
         }
         
         isLoading = true
-        print("DEBUG: Starting to fetch goals for user: \(userId)")
         
         do {
+            //query goals and are ordered by time
             let snapshot = try await db.collection("goals")
                 .whereField("userId", isEqualTo: userId)
                 .order(by: "timestamp", descending: false)
                 .getDocuments()
             
-            print("DEBUG: Found \(snapshot.documents.count) goals")
-            
+            //each doc is converted into a Goal object
             self.goals = snapshot.documents.compactMap { doc in
                 if let goal = try? doc.data(as: Goal.self) {
-                    print("DEBUG: Successfully decoded goal: \(goal.name)")
                     return goal
                 } else {
-                    print("DEBUG: Failed to decode goal document")
                     return nil
                 }
             }
-            print("DEBUG: Successfully loaded \(self.goals.count) goals")
-            self.updateGoalCount()
+            self.updateGoalCount() //this updates the goal counter
         } catch {
-            print("DEBUG: Error fetching goals: \(error.localizedDescription)")
             errorMessage = "Failed to load goals: \(error.localizedDescription)"
         }
         isLoading = false
     }
     
-    func updateGoalCount() {
+    func updateGoalCount() { //counts goals all and completed
         allGoals = goals.count
         completedGoals = goals.filter {$0.isDone }.count
     }
     
+
     func addGoal(name: String) async {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
+        //new goal object is created
         let newGoal = Goal(
             id: nil,
             name: name,
@@ -78,7 +75,7 @@ class GoalsViewModel: ObservableObject {
         
         do {
             let docRef = try db.collection("goals").addDocument(from: newGoal)
-            // Add the new goal to the array with its ID
+            // add the new goal to the array with its ID
             var goalWithId = newGoal
             goalWithId.id = docRef.documentID
             goals.append(goalWithId)
@@ -100,7 +97,7 @@ class GoalsViewModel: ObservableObject {
             if let index = goals.firstIndex(where: { $0.id == id }) {
                 goals[index].isDone = updatedGoal.isDone
             }
-            updateGoalCount()
+            updateGoalCount() //this recalculated the completed goals
         } catch {
             errorMessage = "failed to toggle goal: \(error.localizedDescription)"
         }
@@ -111,9 +108,9 @@ class GoalsViewModel: ObservableObject {
         
         do {
             try await db.collection("goals").document(id).delete()
-            // Remove the goal from local array instead of fetching
+            // Remove the goal from local array
             goals.removeAll { $0.id == id }
-            updateGoalCount()
+            updateGoalCount() //updates the count used on the goal progress bar
         } catch {
             errorMessage = "failed to delete goal: \(error.localizedDescription)"
         }

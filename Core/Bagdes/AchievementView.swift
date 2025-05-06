@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct AchievementView: View {
-    @StateObject private var leaderboardViewModel = LeaderboardViewModel()
+    @StateObject private var leaderboardViewModel = LeaderboardViewModel() //called because access to userPoints is needed and used for the points the user has
     
-    // Helper to get each achievement label
+    // Helper func to get each achievement label
     private func achievementLevel(for points: Int) -> String {
         switch points {
         case 50...: return "Champion"
@@ -25,23 +25,22 @@ struct AchievementView: View {
     
     var body: some View {
         VStack(spacing: 24) {
-            Text("Gym Achievements !")
+            Text("Your Gym Achievements!")
                 .font(.title)
                 .fontWeight(.bold)
             
-            if leaderboardViewModel.userPoint == 0 {
+            if leaderboardViewModel.userPoint == 0 { //this text is displayed when the user has no points
                 Text("Log your gym attendance to start earning points and unlock achievements!")
                     .font(.headline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding()
             } else {
-                Text("Points: \(leaderboardViewModel.userPoint)")
-                    .font(.largeTitle)
-                    .fontWeight(.semibold)
+                Text("Points: \(leaderboardViewModel.userPoint)") // points the user has
+                    .font(.title2) 
                     .padding(.bottom, 8)
                 
-                Text("Level: \(achievementLevel(for: leaderboardViewModel.userPoint))")
+                Text("Level: \(achievementLevel(for: leaderboardViewModel.userPoint))") // different acheievemnt levels based on the points, uses the helper func to get the levels
                     .font(.title2)
                     .fontWeight(.medium)
                     .foregroundColor(Color("AppOrange"))

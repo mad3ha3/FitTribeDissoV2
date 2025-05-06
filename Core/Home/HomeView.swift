@@ -10,18 +10,19 @@ import FirebaseAuth
 
 //the main home screen of the app, what user sees when they first log in
 struct HomeView: View {
-    @State private var showSearch = false
-    @EnvironmentObject var authViewModel: AuthViewModel //access to the authentication state and current user info
-    @StateObject private var gymAttendanceViewModel = GymAttendanceViewModel()
-    @StateObject private var goalsViewModel = GoalsViewModel()
-    @State private var showingCheckInAlert = false
-    @State private var checkInSuccess = false
-    @AppStorage("notificationScheduled") private var notificationScheduled = false
-    @State private var showAchievement = false
+    @State private var showSearch = false // controls showing user search sheet
+    @EnvironmentObject var authViewModel: AuthViewModel // access to auth state needed for user info
+    @StateObject private var gymAttendanceViewModel = GymAttendanceViewModel() // handles gym check-in logic
+    @StateObject private var goalsViewModel = GoalsViewModel() // handles goals progress
+    @State private var showingCheckInAlert = false // controls check-in alert
+    @State private var checkInSuccess = false // controls success alert
+    @AppStorage("notificationScheduled") private var notificationScheduled = false // tracks if notification is set and the users permission decision
+    @State private var showAchievement = false // controls showing achievements sheet
     
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
+                // welcome message at the top
                 Text("Welcome back to FitTribe!")
                     .font(.title)
                     .fontWeight(.bold)
@@ -106,7 +107,7 @@ struct HomeView: View {
                 )
                 .padding(.horizontal)
 
-                // Search Users Card
+                // Search Users Card - lets user search and follow others
                 VStack(spacing: 16) {
                     Text("Search for other users on the app to give them a follow and start competing!")
                         .font(.headline)
@@ -117,7 +118,7 @@ struct HomeView: View {
                         .frame(maxWidth: .infinity)
 
                     Button {
-                        showSearch = true
+                        showSearch = true // open user search sheet
                     } label: {
                         HStack {
                             Text("Search For Users")
@@ -144,7 +145,7 @@ struct HomeView: View {
                 )
                 .padding(.horizontal)
 
-                // goals
+                // goals, navigation link is used to go to the goals view
                 NavigationLink(destination: GoalsView(goalsViewModel: goalsViewModel)) {
                     GoalsProgressCard(goalsViewModel: goalsViewModel)
                 }
@@ -154,19 +155,23 @@ struct HomeView: View {
                 Spacer()
             }
             .padding(.vertical)
+            // sheet for searching users
             .sheet(isPresented: $showSearch) {
                 SearchUserView()
             }
+            // sheet for viewing achievements
             .sheet(isPresented: $showAchievement) {
                 AchievementView()
             }
         }
+        // ask for notification permission on first ever launch of the app 
         .onAppear {
             if !notificationScheduled {
                 NotificationManager.shared.checkNotificationPermission()
                 notificationScheduled = true
             }
         }
+        // alert for gym check-in confirmation
         .alert("Check In", isPresented: $showingCheckInAlert) {
             Button("Cancel", role: .cancel) { }
             Button("Confirm") {
@@ -177,6 +182,7 @@ struct HomeView: View {
         } message: {
             Text("Are you sure you want to check in?")
         }
+        // alert for successful check-in
         .alert("Success", isPresented: $checkInSuccess) {
             Button("OK") { }
         } message: {
@@ -185,6 +191,7 @@ struct HomeView: View {
     }
 }
 
+// card that shows goals progress and the progress bar
 struct GoalsProgressCard: View {
     @ObservedObject var goalsViewModel: GoalsViewModel
 
@@ -195,6 +202,7 @@ struct GoalsProgressCard: View {
                 .foregroundColor(.primary)
 
             if goalsViewModel.allGoals > 0 {
+                // progress bar for completed goals
                 ProgressView(
                     value: Double(goalsViewModel.completedGoals),
                     total: Double(goalsViewModel.allGoals)

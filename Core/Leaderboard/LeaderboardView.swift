@@ -3,12 +3,12 @@ import SwiftUI
 
 struct LeaderboardView: View {
     @StateObject private var viewModel = LeaderboardViewModel()
-    @State private var selectedTab = 0
+    @State private var selectedTab = 0 //too track each tab gloabl and friends
     
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Segmented Control for Global/Friends
+                // Segmented toggle for Global/Friends
                 Picker("Leaderboard Type", selection: $selectedTab) {
                     Text("Global").tag(0)
                     Text("Friends").tag(1)
@@ -16,13 +16,13 @@ struct LeaderboardView: View {
                 .pickerStyle(.segmented)
                 .padding()
                 .onChange(of: selectedTab) { oldValue, newValue in
-                    Task {
+                    Task { //fetches the selected leaderboard
                         await viewModel.fetchLeaderboard(showFriendsOnly: newValue == 1)
                     }
                 }
                 
                 List {
-                    ForEach(Array(viewModel.users.enumerated()), id: \.element.id) { index, user in
+                    ForEach(Array(viewModel.users.enumerated()), id: \.element.id) { index, user in //goes through each user and displays them in a row each
                         LeaderboardRow(user: user, rank: index + 1)
                             .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                     }
@@ -45,7 +45,7 @@ struct LeaderboardView: View {
                 }
                 }
             .navigationTitle("Leaderboard")
-            .refreshable {
+            .refreshable { //pull the leaderbaord to referesh the points
                 await viewModel.fetchLeaderboard(showFriendsOnly: selectedTab == 1)
             }
         }

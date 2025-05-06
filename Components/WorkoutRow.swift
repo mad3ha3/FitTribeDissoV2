@@ -1,9 +1,8 @@
-
-
 import SwiftUI
 
+// shows a single workout row with details
 struct WorkoutRow: View {
-    let workout: Workout
+    let workout: Workout // workout data for this row
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -20,7 +19,7 @@ struct WorkoutRow: View {
                 }
                 
                 if let sets = workout.sets, let reps = workout.reps {
-                    Text(" \(sets)x\(reps)")
+                    Text(" \(sets)x\(reps)") // shows the sets and reps
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }

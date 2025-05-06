@@ -3,10 +3,12 @@
 
 import SwiftUI
 
+// custom chat bubble shape for messages
 struct ChatBubble: Shape {
-    let isFromCurrentUser: Bool
+    let isFromCurrentUser: Bool // true if message is from current user
     
     func path(in rect: CGRect) -> Path {
+        // creates a bubble with a tail on the correct side
         let path = UIBezierPath(roundedRect: rect,
                                 byRoundingCorners: [
                                     .topLeft,

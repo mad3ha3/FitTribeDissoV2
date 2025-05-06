@@ -13,6 +13,7 @@ struct WorkoutTypeView: View {
                     GridItem(.flexible(), spacing: 16),
                     GridItem(.flexible(), spacing: 16)
                 ], spacing: 16) {
+                    //shows each workout type
                     ForEach(viewModel.workoutTypes, id: \.self) { type in
                         ZStack {
                             NavigationLink(destination: WorkoutDetailView(workoutType: type)) {
@@ -49,7 +50,7 @@ struct WorkoutTypeView: View {
             .sheet(isPresented: $showingAddWorkoutType) {
                 AddWorkoutTypeView(viewModel: viewModel)
             }
-            .alert("Delete Workout Type", isPresented: $showingDeleteAlert) {
+            .alert("Delete Workout Type", isPresented: $showingDeleteAlert) { //alert shown before deletion is allowed
                 Button("Cancel", role: .cancel) { }
                 Button("Delete", role: .destructive) {
                     if let type = typeToDelete {

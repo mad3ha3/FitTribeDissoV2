@@ -4,8 +4,8 @@ import FirebaseAuth
 
 @MainActor
 class WorkoutViewModel: ObservableObject {
-    @Published var workouts: [Workout] = []
-    @Published var workoutTypes: [String] = []
+    @Published var workouts: [Workout] = [] //list of users workouts
+    @Published var workoutTypes: [String] = [] //list of users wokrout types
     @Published var errorMessage: String?
     @Published var isLoading = false
     
@@ -18,6 +18,7 @@ class WorkoutViewModel: ObservableObject {
         }
     }
     
+    //prevents multiple fetches, load workouts and workout types
     private func initialFetch() async {
         if hasInitialFetch { return }
         hasInitialFetch = true
@@ -25,10 +26,12 @@ class WorkoutViewModel: ObservableObject {
         await fetchWorkoutTypes()
     }
     
+    //refreshes workoutlist
     func refreshWorkouts() async {
         await fetchWorkouts()
     }
     
+    //fetches all workouts of the current user
     private func fetchWorkouts() async {
         guard !isLoading, let userId = Auth.auth().currentUser?.uid else { return }
         isLoading = true
@@ -43,7 +46,6 @@ class WorkoutViewModel: ObservableObject {
             }
             // Sort the workouts by date after fetching
             self.workouts.sort { $0.date > $1.date }
-            print("DEBUG: Fetched \(self.workouts.count) workouts")
         } catch {
             print("DEBUG: Error fetching workouts: \(error.localizedDescription)")
             self.errorMessage = "Failed to fetch workouts: \(error.localizedDescription)"
@@ -52,9 +54,9 @@ class WorkoutViewModel: ObservableObject {
         isLoading = false
     }
     
+    //fetches all workouts types for the current user
     private func fetchWorkoutTypes() async {
         guard let userId = Auth.auth().currentUser?.uid else {
-            print("DEBUG: No user ID found when fetching workout types")
             return
         }
         
@@ -68,13 +70,14 @@ class WorkoutViewModel: ObservableObject {
                 document.data()["name"] as? String
             }
             self.workoutTypes.sort()
-            print("DEBUG: Fetched \(self.workoutTypes.count) workout types")
+
         } catch {
             print("DEBUG: Error fetching workout types: \(error.localizedDescription)")
             self.errorMessage = "Failed to fetch workout types: \(error.localizedDescription)"
         }
     }
     
+    //add workout entry to firebase for the current user
     func addWorkout(workout: Workout) async {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
@@ -83,7 +86,6 @@ class WorkoutViewModel: ObservableObject {
         
         do {
             let docRef = try db.collection("workouts").addDocument(from: workoutToAdd)
-            print("DEBUG: Added workout with ID: \(docRef.documentID)")
             await refreshWorkouts()
         } catch {
             print("DEBUG: Error adding workout: \(error.localizedDescription)")
@@ -91,11 +93,9 @@ class WorkoutViewModel: ObservableObject {
         }
     }
     
+    //add workout type to firebase for the current user
     func addWorkoutType(type: String) async {
-        guard let userId = Auth.auth().currentUser?.uid else {
-            print("DEBUG: No user ID found when adding workout type")
-            return
-        }
+        guard let userId = Auth.auth().currentUser?.uid else { return }
         
         // Check if the type already exists
         if workoutTypes.contains(type) {
@@ -122,6 +122,7 @@ class WorkoutViewModel: ObservableObject {
         }
     }
     
+    //deletes workout from firestore
     func deleteWorkout(workout: Workout) async {
         guard let id = workout.id else { return }
         
@@ -135,6 +136,7 @@ class WorkoutViewModel: ObservableObject {
         }
     }
     
+    //deletes workout type from firestore
     func deleteWorkoutType(type: String) async {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         

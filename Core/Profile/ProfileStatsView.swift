@@ -1,13 +1,14 @@
 import SwiftUI
 
+//used to display the following and followers
 struct ProfileStatsView: View {
     let followers: Int
     let following: Int
-    var points: Int? = nil
 
     var body: some View {
         HStack(spacing: 32) {
             VStack {
+                //followers title and number
                 Text("\(followers)")
                     .font(.headline)
                 Text("Followers")
@@ -15,19 +16,11 @@ struct ProfileStatsView: View {
             }
 
             VStack {
+                //following title and number
                 Text("\(following)")
                     .font(.headline)
                 Text("Following")
                     .font(.caption)
-            }
-
-            if let points = points {
-                VStack {
-                    Text("🔥\(points)")
-                        .font(.headline)
-                    Text("Points")
-                        .font(.caption)
-                }
             }
         }
         .padding(.vertical)
@@ -35,5 +28,5 @@ struct ProfileStatsView: View {
 }
 
 #Preview {
-    ProfileStatsView(followers: 120, following: 85, points: 550)
+    ProfileStatsView(followers: 120, following: 85)
 }

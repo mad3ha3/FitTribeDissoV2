@@ -1,5 +1,6 @@
 import SwiftUI
 
+//helps to display the chats in the inbox
 struct InboxRowView: View {
     let message: Message
     

@@ -13,7 +13,7 @@ struct RegistrationView: View {
     @State private var fullname: String = ""
     @State private var password: String = ""
     @State private var confirmPassword: String = ""
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) var dismiss //dismisses the current view
     @EnvironmentObject var viewModel: AuthViewModel
     
     var body: some View {
@@ -111,7 +111,7 @@ struct RegistrationView: View {
     }
 }
 //MARK: - AuthenticationFormProtocol
-
+//this is the form validation for the registration fields
 extension RegistrationView: AuthenticationFormProtocol{
     var formIsValid: Bool {
         return !email.isEmpty

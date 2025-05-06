@@ -14,7 +14,7 @@ struct ProfileView: View {
     @State private var showingSignOutAlert = false
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var authViewModel: AuthViewModel
-    @StateObject private var followViewModel = FollowViewModel()
+    @StateObject private var followViewModel = FollowViewModel() //for follower/following nnumber
     
     var displayedUser: User? {
         user ?? authViewModel.currentUser
@@ -31,13 +31,14 @@ struct ProfileView: View {
                                 Text(displayedUser.fullname)
                                     .font(.headline)
                                 Spacer()
+                                //initials within the circle
                                 Text(displayedUser.initials)
                                     .font(.headline)
                                     .foregroundColor(.white)
                                     .frame(width: 40, height: 40)
                                     .background(Circle().fill(Color("AppOrange")))
                             }
-                            
+                            //users email
                             Text(displayedUser.email)
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
@@ -56,7 +57,7 @@ struct ProfileView: View {
                     }
                 }
                 
-                // Actions Section
+                // sign out if it is only the current user's profile
                 if user == nil {
                     Section("Sign out") {
                         // Sign Out Button
@@ -73,7 +74,7 @@ struct ProfileView: View {
                 }
             }
             
-            
+            //confirmation alert for signing out func
             .alert("Sign Out", isPresented: $showingSignOutAlert) {
                 Button("Cancel", role: .cancel) { }
                 Button("Sign Out", role: .destructive) {
