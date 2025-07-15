@@ -32,7 +32,7 @@ struct HomeView: View {
 
                 // View Achievements Card
                 VStack(spacing: 16) {
-                    Text("View your achievement levels based on your points!")
+                    Text("Gain points and unlock new achievements !")
                         .font(.headline)
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)
@@ -70,7 +70,7 @@ struct HomeView: View {
 
                 // Log Gym Attendance Card
                 VStack(spacing: 16) {
-                    Text("Log your gym attendance today to gain a point")
+                    Text("Gain points by checking in ✅")
                         .font(.headline)
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)
@@ -109,7 +109,7 @@ struct HomeView: View {
 
                 // Search Users Card - lets user search and follow others
                 VStack(spacing: 16) {
-                    Text("Search for other users on the app to give them a follow and start competing!")
+                    Text("Give users a follow and start competing! 💪")
                         .font(.headline)
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)

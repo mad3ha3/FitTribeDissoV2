@@ -4,7 +4,7 @@
 //
 //  Created by Madeha Ahmed on 14/04/2025.
 //
-
+import Foundation
 import SwiftUI
 
 struct AddWorkoutView: View {
@@ -20,6 +20,7 @@ struct AddWorkoutView: View {
     @State private var selectedDate = Date()
     @State private var sets = 0
     @State private var reps = 0
+    @State private var weight = 0
     
     init(workoutViewModel: WorkoutViewModel, preselectedType: String) {
         self.workoutViewModel = workoutViewModel
@@ -52,10 +53,9 @@ struct AddWorkoutView: View {
                         
                         //inputs for the values for the workout details
                         Stepper("Duration: \(duration) minutes", value: $duration, in: 1...Int.max)
-                        
                         Stepper("Sets: \(sets)", value: $sets, in: 0...Int.max)
                         Stepper("Reps: \(reps)", value: $reps, in: 0...Int.max)
-                        
+                        Stepper("Weight: \(weight) kg", value: $weight, in: 0...Int.max)
                         Stepper("Calories Burned: \(caloriesBurned)", value: $caloriesBurned, in: 0...2000, step: 50)
                     }
                     .padding(.horizontal)
@@ -109,7 +109,8 @@ struct AddWorkoutView: View {
             date: selectedDate,
             userId: "",
             sets: sets,
-            reps: reps
+            reps: reps,
+            weight: weight
         )
         //saves and closes the view
         Task {

@@ -4,6 +4,7 @@ import SwiftUI
 struct LeaderboardView: View {
     @StateObject private var viewModel = LeaderboardViewModel()
     @State private var selectedTab = 0 //too track each tab gloabl and friends
+    @State private var leaderboardLoad = false
     
     var body: some View {
         NavigationStack {
@@ -17,6 +18,7 @@ struct LeaderboardView: View {
                 .padding()
                 .onChange(of: selectedTab) { oldValue, newValue in
                     Task { //fetches the selected leaderboard
+                        await viewModel.fetchFollowedUserIds()
                         await viewModel.fetchLeaderboard(showFriendsOnly: newValue == 1)
                     }
                 }
@@ -45,8 +47,20 @@ struct LeaderboardView: View {
                 }
                 }
             .navigationTitle("Leaderboard")
-            .refreshable { //pull the leaderbaord to referesh the points
-                await viewModel.fetchLeaderboard(showFriendsOnly: selectedTab == 1)
+            .refreshable {
+                if viewModel.isLoading {//pull the leaderbaord to referesh the points
+                    await viewModel.fetchFollowedUserIds()
+                    await viewModel.fetchLeaderboard(showFriendsOnly: selectedTab == 1)
+                }
+            }
+        }
+        .onAppear {
+            if !leaderboardLoad {
+                leaderboardLoad = true
+                Task {
+                    await viewModel.fetchFollowedUserIds()
+                    await viewModel.fetchLeaderboard(showFriendsOnly: selectedTab == 1)
+                }
             }
         }
     }

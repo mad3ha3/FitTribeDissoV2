@@ -8,6 +8,7 @@
 import SwiftUI
 import FirebaseAuth
 
+
 //displays current user profile information w sign out option
 struct ProfileView: View {
     let user: User?

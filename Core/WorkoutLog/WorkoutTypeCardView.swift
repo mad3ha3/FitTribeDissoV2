@@ -40,8 +40,4 @@ struct WorkoutTypeCardView: View {
     }
 }
 
-#Preview {
-    WorkoutTypeCardView(type: "Custom Workout", onDelete: {})
-        .padding()
-        .background(Color(.systemGray6))
-}
+

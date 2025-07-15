@@ -19,8 +19,7 @@ struct FitTribeApp: App {
     
     var body: some Scene {
         WindowGroup {
-            // this shows the content based on the user session
-            ContentView() // Replace with LoginView() or MainView() if needed
+            ContentView()
                 .environmentObject(viewModel)
         }
     }

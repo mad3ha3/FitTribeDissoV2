@@ -16,13 +16,6 @@ class LeaderboardViewModel: ObservableObject {
     private let db = Firestore.firestore()
     private let gymAttendanceViewModel = GymAttendanceViewModel()  //used to count check in per user
     
-    init() { // leaderboard data is fetched after initialisation
-        Task {
-            await fetchFollowedUserIds()
-            await fetchLeaderboard()
-        }
-    }
-    
     func fetchLeaderboard(showFriendsOnly: Bool = false) async {
         isLoading = true
        
@@ -30,7 +23,7 @@ class LeaderboardViewModel: ObservableObject {
             // First, get all users
             let usersSnapshot = try await db.collection("users").getDocuments() //fetches all registered users from firestore
             if usersSnapshot.documents.isEmpty {
-                print("DEBUG: WARNING - No users found in the database")
+                print("DEBUG: WARNING - No users found")
             }
     
             var leaderboardUsers: [LeaderboardUser] = []
@@ -59,9 +52,7 @@ class LeaderboardViewModel: ObservableObject {
                         points: attendanceCount  //the attendance count is the points for the leaderboard
                     ))
                 } catch {
-                    
-                    print("DEBUG: Error details: \(error)")
-                    
+                    print("DEBUG: Error: \(error)")
                 }
             }
             
@@ -70,7 +61,6 @@ class LeaderboardViewModel: ObservableObject {
             
             isLoading = false
         } catch {
-            
             errorMessage = "Failed to fetch leaderboard"
             isLoading = false
         }
@@ -82,11 +72,13 @@ class LeaderboardViewModel: ObservableObject {
         }
         do {
             let snapshot = try await db.collection("users")
+            let followedUsers = try await db.collection("users")
                 .document(currentUserId)
                 .collection("following")
                 .getDocuments()
             
             let ids = snapshot.documents.map { $0.documentID }
+            let ids = followedUsers.documents.map { $0.documentID }
             self.followedUserIds = ids
         } catch {
             print("DEBUG: Failed to fetch followed user IDs: \(error.localizedDescription)")

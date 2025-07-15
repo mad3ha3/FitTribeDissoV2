@@ -13,21 +13,15 @@ struct WorkoutDetailView: View {
     
     var body: some View {
         List {
-            if workoutsForType.isEmpty {
-                Text("No workouts logged for \(workoutType)")
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowBackground(Color.clear)
-            } else {
-                ForEach(workoutsForType) { workout in
-                    WorkoutRow(workout: workout) // each workout is displayed
-                }
-                //delete each workout, swipe to delete
-                .onDelete { indexSet in
-                    guard let index = indexSet.first else { return }
-                    Task {
-                        await viewModel.deleteWorkout(workout: workoutsForType[index])
-                    }
+            //this displays each workout that has been logged
+            ForEach(workoutsForType) { workout in
+                WorkoutRow(workout: workout)
+            }
+            //delete each workout, swipe to delete
+            .onDelete { indexSet in
+                guard let index = indexSet.first else { return }
+                Task {
+                    await viewModel.deleteWorkout(workout: workoutsForType[index])
                 }
             }
         }

@@ -21,7 +21,7 @@ class GoalsViewModel: ObservableObject {
     
     init() {
         Task{
-            await fetchGoals() //auto fetches goals when vm is initialised
+            await fetchGoals() //auto fetches goals when viewmodel is initialised
         }
     }
     
@@ -75,9 +75,11 @@ class GoalsViewModel: ObservableObject {
         
         do {
             let docRef = try db.collection("goals").addDocument(from: newGoal)
+            let newGoalRef = try db.collection("goals").addDocument(from: newGoal)
             // add the new goal to the array with its ID
             var goalWithId = newGoal
             goalWithId.id = docRef.documentID
+            goalWithId.id = newGoalRef.documentID
             goals.append(goalWithId)
             updateGoalCount()
         } catch {

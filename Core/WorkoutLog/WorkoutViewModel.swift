@@ -85,7 +85,7 @@ class WorkoutViewModel: ObservableObject {
         workoutToAdd.userId = userId
         
         do {
-            let docRef = try db.collection("workouts").addDocument(from: workoutToAdd)
+            try db.collection("workouts").addDocument(from: workoutToAdd)
             await refreshWorkouts()
         } catch {
             print("DEBUG: Error adding workout: \(error.localizedDescription)")
@@ -96,12 +96,10 @@ class WorkoutViewModel: ObservableObject {
     //add workout type to firebase for the current user
     func addWorkoutType(type: String) async {
         guard let userId = Auth.auth().currentUser?.uid else { return }
-        
         // Check if the type already exists
         if workoutTypes.contains(type) {
             return
         }
-        
         do {
             // Add the workout type to the user's collection
             try await db.collection("users")
@@ -111,11 +109,9 @@ class WorkoutViewModel: ObservableObject {
                     "name": type,
                     "createdAt": Timestamp()
                 ])
-            
             // Update local state
             workoutTypes.append(type)
             workoutTypes.sort()
-            print("DEBUG: Added workout type: \(type)")
         } catch {
             print("DEBUG: Error adding workout type: \(error.localizedDescription)")
             self.errorMessage = "Failed to add workout type: \(error.localizedDescription)"
@@ -136,7 +132,7 @@ class WorkoutViewModel: ObservableObject {
         }
     }
     
-    //deletes workout type from firestore
+    //deletes workout type from firestore 
     func deleteWorkoutType(type: String) async {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         

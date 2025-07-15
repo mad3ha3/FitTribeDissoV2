@@ -5,6 +5,7 @@ import FirebaseAuth
 import Combine
 
 // View model to handle user search functionality and state management
+// View model to handle user search functionality
 @MainActor
 class SearchViewModel: ObservableObject {
     // Published properties to update the UI
@@ -12,6 +13,12 @@ class SearchViewModel: ObservableObject {
     @Published var users: [User] = []         // Search results
     @Published var isLoading = false          // Loading state indicator
     @Published var errorMessage: String?      // Error message if search fails
+    // properties to update the UI
+    @Published var searchText: String = ""
+    @Published var users: [User] = []
+    @Published var isLoading = false
+    @Published var errorMessage: String?
+    
     
     // Combine cancellable for managing search subscription
     private var searchCancellable: AnyCancellable?
@@ -20,6 +27,7 @@ class SearchViewModel: ObservableObject {
     
     init() {
         // Set up search functionality when initialized
+        // Set up search functionality when initialised
         setupSearchPublisher()
     }
     
@@ -40,6 +48,7 @@ class SearchViewModel: ObservableObject {
     }
     
     // Perform the actual search in Firestore
+    // Search Firestore
     private func performSearch(searchText: String) async {
         // Ensure user is authenticated
         guard let currentUserId = Auth.auth().currentUser?.uid else {
@@ -71,6 +80,7 @@ class SearchViewModel: ObservableObject {
             let snapshot = try await query.getDocuments()
             
             // Process and filter the results
+            // this filters the results
             let filteredUsers = snapshot.documents.compactMap { document -> User? in
                 // Try to decode the document and exclude the current user
                 guard let user = try? document.data(as: User.self),
@@ -84,6 +94,7 @@ class SearchViewModel: ObservableObject {
             self.users = filteredUsers
         } catch {
             // Handle any errors that occur during the search
+            // this handles any errors during the search
             print("DEBUG: Error searching users: \(error.localizedDescription)")
             errorMessage = "Failed to search users"
         }

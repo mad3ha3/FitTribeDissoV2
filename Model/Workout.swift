@@ -20,8 +20,12 @@ struct Workout: Identifiable, Codable {
     var userId: String  // Firebase user ID - this is set in workoutViewModel
     var sets: Int? // number of sets for strength workouts
     var reps: Int? // number of reps per set for strength workouts
+    var weight: Int? //workout
     
     enum CodingKeys: String, CodingKey {
-        case id, name, type, duration, caloriesBurned, notes, date, userId, sets, reps
+        case id, name, type, duration, caloriesBurned, notes, date, userId, sets, reps, weight
     }
 }
+
+
+

@@ -9,7 +9,7 @@ class FollowViewModel: ObservableObject { //observable allows view to see change
     @Published var errorMessage: String? //error message
     @Published var isLoading = false
 
-    //ref to fb instance
+    //ref to firebase
     private let db = Firestore.firestore()
 
     // Check if currentUser is following targetUser
@@ -19,12 +19,14 @@ class FollowViewModel: ObservableObject { //observable allows view to see change
         
         //ref to doc which shows if current user follows searched user
         let docRef = db.collection("users")
+        let followStatus = db.collection("users")
             .document(currentUserId)
             .collection("following")
             .document(targetUserId)
 
         do {
             let doc = try await docRef.getDocument() //goes to fetch document
+            let doc = try await followStatus.getDocument() //goes to fetch document
             self.isFollowed = doc.exists //this is set based on whether the docuemnt exists
             await fetchFollowCounts(for: targetUserId) //follower/following counts are fetched
         } catch { //error messages
@@ -39,27 +41,23 @@ class FollowViewModel: ObservableObject { //observable allows view to see change
     func follow(userId: String, currentUserId: String) async {
         isLoading = true
         errorMessage = nil
-        
         do {
             // Add to current users following
             try await db.collection("users")
                 .document(currentUserId)
                 .collection("following")
                 .document(userId).setData([:])
-
             // Adds the current user to the search user's followers
             try await db.collection("users")
                 .document(userId)
                 .collection("followers")
                 .document(currentUserId).setData([:])
-
             isFollowed = true //upddates follow
             await fetchFollowCounts(for: userId)
         } catch {
             print("Error following user: \(error.localizedDescription)")
             errorMessage = "Failed to follow user"
         }
-        
         isLoading = false
     }
 

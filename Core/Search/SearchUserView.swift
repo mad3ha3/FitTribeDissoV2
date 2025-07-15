@@ -15,7 +15,7 @@ struct SearchUserView: View {
                 SearchBar(text: $viewModel.searchText, isSearching: .constant(true))
                     .padding(.vertical, 8)
                 
-                // Content of the search
+                // loading view
                 if viewModel.isLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
